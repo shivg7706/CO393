@@ -8,6 +8,7 @@ class Cycle {
     private int [][] adjacencyMatrix;
     private boolean [] visited;
     ArrayList<ArrayList<Integer>> cycles = new ArrayList<ArrayList<Integer>>();
+    private  boolean [] finalCycles;
 
     public Cycle() {
         Scanner in = new Scanner(System.in);
@@ -45,11 +46,9 @@ class Cycle {
         }
     }
 
-    public void dfs(Integer start, Integer curr, ArrayList<Integer> temp) {
+    private void dfs(Integer start, Integer curr, ArrayList<Integer> temp) {
         temp.add(curr);
         visited[curr] = true;
-
-
         for (int i = 0; i < nodes; i++) {
             if(adjacencyMatrix[curr][i] == 1) {
                 if (i == start) {
@@ -61,6 +60,7 @@ class Cycle {
                 }
             }
         }
+
         if(temp.size() > 0) {
             temp.remove(temp.size() - 1);
         }
@@ -69,11 +69,46 @@ class Cycle {
 
     public void printAll() {
         for (int i = 0; i < cycles.size(); i++) {
-            // for (int j = 0; j < cycles.get(i).size(); j++) {
-                System.out.print(cycles.get(i));
-            //}
+            for (int j = 0; j < cycles.get(i).size(); j++) {
+                System.out.print(cycles.get(i).get(j) + " -> ");
+            }
+            System.out.println(cycles.get(i).get(0));
             System.out.println();
         }
+
+    }
+
+    public void removedChildren() {
+        finalCycles = new boolean[cycles.size()];
+        for (int i = 0; i < cycles.size(); i++) {
+            finalCycles[i] = false;
+        }
+
+        for (int i = 0; i < cycles.size(); i++) {
+            for (int j = i+1; j < cycles.size(); j++) {
+                if(!finalCycles[i]) {
+                    if ((cycles.get(i)).containsAll(cycles.get(j))) {
+                        finalCycles[j] = true;
+                    }
+                    if ((cycles.get(j)).containsAll(cycles.get(i))) {
+                        finalCycles[i] = true;
+                    }
+                }
+            }
+        }
+        System.out.println("Filtered Cycles");
+        for (int i = 0; i < cycles.size(); i++) {
+            for (int j = 0; j < cycles.get(i).size(); j++) {
+                if (!finalCycles[i]) {
+                    System.out.print(cycles.get(i).get(j) + " -> ");
+                }
+            }
+            if (!finalCycles[i]) {
+                System.out.println(cycles.get(i).get(0));    
+            }
+            
+        }
+
     }
 
 }
@@ -83,5 +118,6 @@ public class Main {
         Cycle c = new Cycle();
         c.start();
         c.printAll();
+        c.removedChildren();
     }
 }
